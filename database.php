@@ -3,7 +3,7 @@
 class Database
 {
     private $host = "localhost";
-    private $db_name = "banking_system";
+    private $db_name = "anurag";
     private $username = "root";
     private $password = "";
 
@@ -13,6 +13,7 @@ class Database
     public function __construct()
     {
         if (!$this->conn) {
+            $this->conn = true;
             $this->mysqli = new mysqli($this->host, $this->username, $this->password, $this->db_name);
             if ($this->mysqli->connect_error) {
                 array_push($this->result, $this->mysqli->connect_error);
@@ -23,8 +24,25 @@ class Database
         }
     }
 
-    public function insertData()
+    public function insertData($table, $params = array())
     {
+        if ($this->tableExists($table)) {
+            // print_r($params);
+
+            $tableColumns = implode(", ", array_keys($params));
+            $tableValues = implode("', '", array_values($params));
+            $sql = "INSERT INTO $table () VALUES ('$tableValues')";
+
+            if ($this->mysqli->query($sql)) {
+                array_push($this->result, $this->mysqli->insert_id);
+                return true;
+            } else {
+                array_push($this->result, $this->mysqli->error);
+                return false;
+            }
+        } else {
+            return false;
+        }
 
     }
 
@@ -38,6 +56,26 @@ class Database
 
     }
 
+    private function tableExists($table)
+    {
+        $sql = "SHOW TABLES FROM $this->db_name LIKE '$table'";
+        $tableInDb = $this->mysqli->query($sql);
+        if ($tableInDb) {
+            if ($tableInDb->num_rows == 1) {
+                return true;
+            } else {
+                array_push($this->result, $table . "Table does not exist");
+                return false;
+            }
+        }
+    }
+
+    public function getResult()
+    {
+        $val = $this->result;
+        $this->result = array();
+        return $val;
+    }
     public function __destruct()
     {
         if ($this->conn) {
