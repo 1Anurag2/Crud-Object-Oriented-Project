@@ -46,9 +46,27 @@ class Database
 
     }
 
-    public function updateData()
+    public function updateData($table, $params = array(), $where = NULL)
     {
-
+        if ($this->tableExists($table)) {
+            $args = array();
+            foreach ($params as $key => $value) {
+                $args[] = "$key = '$value' ";
+            }
+            $sql = "UPDATE $table SET " . implode(',',$args);
+            if($where != null){
+                $sql .= "WHERE $where";
+            }
+            if ($this->mysqli->query($sql)) {
+                array_push($this->result, $this->mysqli->affected_rows);
+                return true;
+            } else {
+                array_push($this->result, $this->mysqli->error);
+                return false;
+            }
+        } else {
+            return false;
+        }
     }
 
     public function deleteData()
