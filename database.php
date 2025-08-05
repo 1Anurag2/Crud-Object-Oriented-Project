@@ -69,9 +69,23 @@ class Database
         }
     }
 
-    public function deleteData()
+    public function deleteData($table, $where = NULL)
     {
-
+        if ($this->tableExists($table)) {
+            $sql = "DELETE FROM $table";
+            if ($where != NULL) {
+                $sql .= " WHERE $where";
+            }
+             if ($this->mysqli->query($sql)) {
+                array_push($this->result, $this->mysqli->affected_rows);
+                return true;
+            } else {
+                array_push($this->result, $this->mysqli->error);
+                return false;
+            }
+        }else{
+            return false;
+        }
     }
 
     private function tableExists($table)
