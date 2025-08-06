@@ -53,8 +53,8 @@ class Database
             foreach ($params as $key => $value) {
                 $args[] = "$key = '$value' ";
             }
-            $sql = "UPDATE $table SET " . implode(',',$args);
-            if($where != null){
+            $sql = "UPDATE $table SET " . implode(',', $args);
+            if ($where != null) {
                 $sql .= "WHERE $where";
             }
             if ($this->mysqli->query($sql)) {
@@ -76,16 +76,57 @@ class Database
             if ($where != NULL) {
                 $sql .= " WHERE $where";
             }
-             if ($this->mysqli->query($sql)) {
+            if ($this->mysqli->query($sql)) {
                 array_push($this->result, $this->mysqli->affected_rows);
                 return true;
             } else {
                 array_push($this->result, $this->mysqli->error);
                 return false;
             }
-        }else{
+        } else {
             return false;
         }
+    }
+
+    public function select($table, $rows = "*", $join = null, $where = null, $order = null, $limit)
+    {
+        if ($this->tableExists($table)) {
+            $sql = "SELECT $rows FROM $table";
+            if ($join != null) {
+                $sql .= " JOIN $join";
+            }
+            if ($where != null) {
+                $sql .= " WHERE $where";
+            }
+            if ($order != null) {
+                $sql .= " ORDER BY $order";
+            }
+            if ($limit != null) {
+                $sql .= " LIMIT 0,$limit";
+            }
+            echo $sql;
+            $query = $this->mysqli->query($sql);
+            if ($query) {
+                $this->result = $query->fetch_all(MYSQLI_ASSOC);
+                return true;
+            } else {
+                array_push($this->result, $this->mysqli->error);
+                return false;
+            }
+        }
+    }
+
+    public function sql($sql)
+    {
+        $query = $this->mysqli->query($sql);
+        if ($query) {
+            $this->result = $query->fetch_all(MYSQLI_ASSOC);
+            return true;
+        } else {
+            array_push($this->result, $this->mysqli->error);
+            return false;
+        }
+
     }
 
     private function tableExists($table)

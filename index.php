@@ -21,7 +21,16 @@ $obj = new Database();
 // print_r($obj->getResult());
 
 
-$obj ->deleteData("information", 'id="1"');
-echo "delete result is : ";
+// $obj ->deleteData("information", 'id="1"');
+// echo "delete result is : ";
+// print_r($obj->getResult());
+
+// $obj ->sql("SELECT * FROM information");
+// echo "Select result is : ";
+// print_r($obj->getResult());
+
+// $obj->select('information', '*', null, 'age=22', 'Name', 2);
+$obj->select('information', 'id,Name', null, 'age=22', 'Name', null);
+echo "Select result is : ";
 print_r($obj->getResult());
 ?>
